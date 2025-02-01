@@ -1,0 +1,35 @@
+Sub ExportarParaWord()
+    Dim wdApp As Object
+    Dim wdDoc As Object
+    Dim ws As Worksheet
+    Dim rng As Range
+    Dim lastRow As Long
+    
+    ' Definir a planilha
+    Set ws = ThisWorkbook.Sheets("Principal")
+    
+    ' Encontrar a última linha preenchida na coluna F
+    lastRow = ws.Cells(ws.Rows.Count, 6).End(xlUp).Row
+    
+    ' Criar uma nova instância do Word
+    On Error Resume Next
+    Set wdApp = GetObject(Class:="Word.Application") ' Tenta conectar ao Word aberto
+    If wdApp Is Nothing Then
+        Set wdApp = CreateObject("Word.Application") ' Abre uma nova instância do Word
+    End If
+    On Error GoTo 0
+    
+    wdApp.Visible = True ' Torna o Word visível
+    Set wdDoc = wdApp.Documents.Add ' Cria um novo documento
+    
+    ' Loop pelas células da coluna F e adicionar ao Word
+    For Each rng In ws.Range("F2:F" & lastRow)
+        If rng.Value <> "" Then
+            wdDoc.Content.InsertAfter rng.Value & vbCrLf & vbCrLf
+        End If
+    Next rng
+    
+    ' Liberar objetos
+    Set wdDoc = Nothing
+    Set wdApp = Nothing
+End Sub
